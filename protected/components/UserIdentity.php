@@ -40,29 +40,20 @@ class UserIdentity extends CUserIdentity
 
     public function authenticate()
     {
+        $user = Yii::app()->db->createCommand('SELECT * FROM {{user}} WHERE email=:email')->bindValue(':email',$this->username, PDO::PARAM_STR)->queryRow();
 
-        $user=User::model()->notsafe()->findByAttributes(array('username'=>$this->username));
-        $sql = 'SELECT id, password FROM {{user}} WHERE email=:email';
-        $query = Yii::app()->db->createCommand($sql);
-
-
-        if($user===null){
-            if (strpos($this->username,"@")) {
-                $this->errorCode=self::ERROR_EMAIL_INVALID;
-            } else {
-                $this->errorCode=self::ERROR_USERNAME_INVALID;
-            }
-        }else if(Yii::app()->getModule('user')->encrypting($this->password)!==$user->password)
+        if(empty($user)){
+            $this->errorCode=self::ERROR_EMAIL_INVALID;
+        }else if(!User::validatePassword($this->password, $user['hash']))
             $this->errorCode=self::ERROR_PASSWORD_INVALID;
-        else if($user->status==0 && Yii::app()->getModule('user')->loginNotActiv==false)
-            $this->errorCode=self::ERROR_STATUS_NOTACTIV;
-        else if($user->status==-1)
+        else if($user['block']==User::STATUS_YES)
             $this->errorCode=self::ERROR_STATUS_BAN;
+        else if($user['confirm']==User::STATUS_YES)
+            $this->errorCode=self::ERROR_STATUS_NOTACTIV;
         else {
-            $this->_id=$user->id;
-            $this->username=$user->username;
+            $this->_id=$user['id'];
 
-            $this->setState('role',$user->role);
+            $this->setState('role',$user['role']);
 
             $this->errorCode=self::ERROR_NONE;
         }

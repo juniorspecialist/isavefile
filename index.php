@@ -12,3 +12,16 @@ defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
 
 require_once($yii);
 Yii::createWebApplication($config)->run();
+
+$pass = 123;
+//echo crypt($pass).'<br>';
+
+//User::encrypted(123);
+$hash = '$2a$12$N2M9ZVYoSLFrZTM7B38FTe8iZJLfFFNk.LnfxGUWoAAe6cmhY2S8a';
+
+if(User::validatePassword(123, $pass, $hash)){
+    echo 'valid';
+}else{
+    echo 'not_valid';
+}
+
