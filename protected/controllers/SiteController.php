@@ -21,9 +21,43 @@ class SiteController extends Controller
 		);
 	}
 
+    public function filters()
+    {
+        return array(
+            'ajaxOnly+upload',
+        );
+    }
+    /*
+     * контроллер для загрузки файлов
+     */
+    public function actionUpload(){
+
+        $tempFolder=Yii::getPathOfAlias('webroot').'/upload/';
+
+        @mkdir($tempFolder, 0777, TRUE);
+        @mkdir($tempFolder.'chunks', 0777, TRUE);
+
+        Yii::import("ext.EFineUploader.qqFileUploader");
+
+        $uploader = new qqFileUploader();
+        $uploader->allowedExtensions = array('rar','zip');
+        $uploader->sizeLimit = 5 * 1024 * 1024;//maximum file size in bytes
+        $uploader->chunksFolder = $tempFolder.'chunks';
+
+        $result = $uploader->handleUpload($tempFolder);
+        $result['filename'] = $uploader->getUploadName();
+        $result['folder'] = Yii::getPathOfAlias('webroot.upload');
+
+        $uploadedFile=$tempFolder.$result['filename'];
+
+        header("Content-Type: text/plain");
+        $result=htmlspecialchars(json_encode($result), ENT_NOQUOTES);
+        echo $result;
+        Yii::app()->end();
+    }
+
 	/**
-	 * This is the default 'index' action that is invoked
-	 * when an action is not explicitly requested by users.
+	 * загрузка файла
 	 */
 	public function actionIndex()
 	{

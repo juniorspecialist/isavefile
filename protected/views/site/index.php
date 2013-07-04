@@ -1,20 +1,33 @@
 <?php
 /* @var $this SiteController */
 
-$this->pageTitle=Yii::app()->name;
-?>
-
-<h1>Welcome to <i><?php echo CHtml::encode(Yii::app()->name); ?></i></h1>
-
-<p>Congratulations! You have successfully created your Yii application.</p>
-
-<p>You may change the content of this page by modifying the following two files:</p>
-<ul>
-	<li>View file: <code><?php echo __FILE__; ?></code></li>
-	<li>Layout file: <code><?php echo $this->getLayoutFile('main'); ?></code></li>
-</ul>
-
-<p>For more details on how to further develop this application, please read
-the <a href="http://www.yiiframework.com/doc/">documentation</a>.
-Feel free to ask in the <a href="http://www.yiiframework.com/forum/">forum</a>,
-should you have any questions.</p>
+$this->widget('ext.EFineUploader.EFineUploader',
+    array(
+        'id'=>'FineUploader',
+        'config'=>array(
+            'autoUpload'=>true,
+            'request'=>array(
+                'endpoint'=>$this->createUrl('site/upload'),
+                'params'=>array('YII_CSRF_TOKEN'=>Yii::app()->request->csrfToken),
+            ),
+            'retry'=>array('enableAuto'=>true,'preventRetryResponseProperty'=>true),
+            'chunking'=>array('enable'=>true,'partSize'=>100),//bytes
+            'callbacks'=>array(
+                'onComplete'=>"js:function(id, name, response){ $('li.qq-upload-success').remove(); }",
+                //'onError'=>"js:function(id, name, errorReason){ }",
+            ),
+            'validation'=>array(
+                'allowedExtensions'=>array('rar','zip'),
+                'sizeLimit'=>5 * 1024 * 1024,//maximum file size in bytes
+                //'minSizeLimit'=>2*1024*1024,// minimum file size in bytes
+            ),
+            /*'messages'=>array(
+                              'tooManyItemsError'=>'Too many items error',
+                              'typeError'=>"Файл {file} имеет неверное расширение. Разрешены файлы только с расширениями: {extensions}.",
+                              'sizeError'=>"Размер файла {file} велик, максимальный размер {sizeLimit}.",
+                              'minSizeError'=>"Размер файла {file} мал, минимальный размер {minSizeLimit}.",
+                              'emptyError'=>"{file} is empty, please select files again without it.",
+                              'onLeave'=>"The files are being uploaded, if you leave now the upload will be cancelled."
+                             ),*/
+        )
+    ));

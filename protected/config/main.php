@@ -23,7 +23,7 @@ return array(
     'sourceLanguage' => 'en_US',
     'language' => 'ru',
 
-    'defaultController'=>'site/login',
+    'defaultController'=>'site/index',
 
 	'modules'=>array(
 		// uncomment the following to enable the Gii tool
@@ -55,6 +55,22 @@ return array(
             'class'=>'application.components.config.DConfig',
             'cache'=>0,
         ),
+        // установим некоторые значения - по умолчанию
+        'widgetFactory'=>array(
+            'widgets'=>array(
+                'CLinkPager'=>array(
+                    'maxButtonCount'=>5,
+                    //'cssFile'=>false,
+                    'pageSize'=>100,
+
+                ),
+                'CJuiDatePicker'=>array(
+                    'language'=>'ru',
+                ),
+            ),
+        ),
+
+
 		// uncomment the following to enable URLs in path-format
 
 		'urlManager'=>array(
@@ -75,6 +91,10 @@ return array(
 			'password' => 'root',
 			'charset' => 'utf8',
             'tablePrefix' => 'tbl_',
+            // включаем профайлер
+            'enableProfiling'=>true,
+            // показываем значения параметров
+            'enableParamLogging' => true,
 		),
 
 		'errorHandler'=>array(
