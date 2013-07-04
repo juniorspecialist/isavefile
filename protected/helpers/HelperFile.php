@@ -34,4 +34,21 @@ class HelperFile {
             return 0;
         }
     }
+
+    /*
+     *  отправка почтового сообщения с правильными заголовками
+     */
+    static function sendEmail($to , $subject, $text_msg){
+
+        $from = Yii::app()->params['adminEmail'];
+
+        $name='=?UTF-8?B?'.base64_encode('Администрация сайта').'?=';
+        $subject='=?UTF-8?B?'.base64_encode($subject).'?=';
+        $headers="From: Администрация сайта <{$from}>\r\n".
+            "Reply-To: {$from}\r\n".
+            "MIME-Version: 1.0\r\n".
+            "Content-type: text/plain; charset=UTF-8";
+
+        mail($to,$subject,$text_msg,$headers);
+    }
 }

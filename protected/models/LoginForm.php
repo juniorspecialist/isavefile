@@ -10,6 +10,7 @@ class LoginForm extends CFormModel
 	public $username;
 	public $password;
 	public $rememberMe;
+    public $existUser = false;
 
 	private $_identity;
 
@@ -27,6 +28,8 @@ class LoginForm extends CFormModel
 			array('rememberMe', 'boolean'),
 			// password needs to be authenticated
 			array('password', 'authenticate'),
+            // проверим заблокирован ли юзер ?, активирован ?
+            array('username', 'isExistUser'),
 		);
 	}
 
@@ -36,9 +39,45 @@ class LoginForm extends CFormModel
 	public function attributeLabels()
 	{
 		return array(
-			'rememberMe'=>'Remember me next time',
+			'username'=>'Логин(email)',
+            'password'=>'Пароль',
 		);
 	}
+
+    /*
+     *  проверим зареган ли текущий юзер
+     * и если зареган - активирован ли или нужно отправить ему письмо снова с авторизацией
+     */
+    public function isExistUser(){
+        if(!$this->hasErrors()){
+
+            $sql = 'SELECT confirm, block, hash, email FROM {{user}} WHERE email=:email';
+
+            $user = Yii::app()->db->createCommand($sql)->bindValue(':email', $this->username, PDO::PARAM_STR)->queryRow();
+
+            // пользователь зареган в БД
+            if(!empty($user)){
+
+                $this->existUser = true;
+
+                // проверим заблокирован ли он, подтвердил ли он авторизацию
+                if($user['block']==User::STATUS_YES){
+                    $this->addError('username', 'Ваш пользователь заблокирован администрацией');
+                }
+                if($user['confirm']==User::STATUS_NO){
+
+                    $this->addError('username', 'Ваш пользователь не подтвердил регистрацию через ссылку в письме, вам отправлено письмо с активацией повторно');
+
+                    $link = CHtml::link('Подтвердить регистрацию', Yii::app()->createAbsoluteUrl('/confirm').'?hash='.$user['hash']);
+
+                    $msg = 'Уважаемый пользователь! Чтобы закончить регистрацию на сайте перейдите по указанной ссылке '.$link;
+
+                    HelperFile::sendEmail($user['email'], 'Активация аккаунта', $msg);
+                }
+
+            }
+        }
+    }
 
 	/**
 	 * Authenticates the password.
@@ -50,7 +89,7 @@ class LoginForm extends CFormModel
 		{
 			$this->_identity=new UserIdentity($this->username,$this->password);
 			if(!$this->_identity->authenticate())
-				$this->addError('password','Incorrect username or password.');
+				$this->addError('password','Не верно указан логин или пароль.');
 		}
 	}
 

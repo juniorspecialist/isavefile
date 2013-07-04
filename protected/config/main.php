@@ -44,6 +44,7 @@ return array(
 		'user'=>array(
 			// enable cookie-based authentication
 			'allowAutoLogin'=>true,
+            'returnUrl'=>'user/'
 		),
 
 //        'cache'=>array(
@@ -76,6 +77,10 @@ return array(
 		'urlManager'=>array(
 			'urlFormat'=>'path',
 			'rules'=>array(
+                '' => 'site/index',
+                //'site/index'=>'',
+                'login'=>'site/login',
+                'confirm'=>'site/confirm',
 				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',

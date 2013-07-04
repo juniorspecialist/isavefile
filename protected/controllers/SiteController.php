@@ -80,6 +80,29 @@ class SiteController extends Controller
 		}
 	}
 
+    /*
+     * подтверждаем регистрацию пользователя
+     */
+    public function actionConfirm($hash=''){
+
+        $model = new ActivationForm();
+
+        $model->hash = Yii::app()->request->getParam('hash');
+
+        if($model->validate()){
+            // активируем юзера и сообщим об успешной активации
+            Yii::app()->db->createCommand('UPDATE {{user}} SET confirm=:confirm WHERE hash=:hash')->bindValues(array(':confirm'=>User::STATUS_YES, ':hash'=>$model->hash))->execute();
+
+            Yii::app()->user->setFlash('confirm','Спасибо, активация вашего аккаунта прошла успешно.');
+
+        }
+
+        $this->render('confirm', array(
+            'model'=>$model
+        ));
+    }
+
+
 	/**
 	 * Displays the contact page
 	 */
@@ -107,26 +130,36 @@ class SiteController extends Controller
 	}
 
 	/**
-	 * Displays the login page
+	 * авторизация-регистрация юзера
+     * если юзер зареган, то считаем что он хочет авторизоваться,
+     * если юзер новый - то считаем, что он хочет зарегаться
 	 */
 	public function actionLogin()
 	{
-		$model=new LoginForm;
-
-		// if it is ajax validation request
-		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
-		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
+		$model = new LoginForm;
 
 		// collect user input data
 		if(isset($_POST['LoginForm']))
 		{
 			$model->attributes=$_POST['LoginForm'];
-			// validate user input and redirect to the previous page if valid
-			if($model->validate() && $model->login())
-				$this->redirect(Yii::app()->user->returnUrl);
+
+            // активирон ? заблокирован ? зар
+			if($model->validate()){//&&
+
+                //проверяем существует ли данный юзер или мы регаем нового
+                if($model->existUser){
+                    //пробуем авторизовать юзера
+                    if($model->login()){
+                        $this->redirect(Yii::app()->user->returnUrl);
+                    }
+                }else{
+                    //регаем нового юзера
+                }
+
+                // пользователь хочет авторизоваться
+
+            }
+
 		}
 		// display the login form
 		$this->render('login',array('model'=>$model));

@@ -45,18 +45,15 @@ class User extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
-			array('email,  block, confirm, password', 'required'),
+			array('email, password', 'required'),
 			array('block, confirm, role', 'numerical', 'integerOnly'=>true),
 			array('email', 'length', 'max'=>255),
             array('hash', 'length', 'max'=>128),
             array('role', 'default', 'value'=>1),
             array('block, confirm', 'default', 'value'=>self::STATUS_NO),
 			array('password', 'length', 'max'=>40),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
+
 			array('id, email, block, confirm, password, role, hash', 'safe', 'on'=>'search'),
 		);
 	}
@@ -146,4 +143,5 @@ class User extends CActiveRecord
         // Передаём эстафетную палочку другим обработчикам// данного события.
         return parent::afterValidate();
     }
+
 }
