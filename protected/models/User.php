@@ -148,6 +148,11 @@ class User extends CActiveRecord
         if($this->isNewRecord){
             // отправим письмо с ссылкой на активацию
             HelperFile::sendEmail($this->email, 'Активация аккаунта', User::createActivateEmail($this->hash));
+
+            // создадим каталог, для хранения файлов пользователем
+            $userFolder = Yii::getPathOfAlias('webroot.upload.'.$this->id);
+
+            @mkdir($userFolder, 0777, TRUE);
         }
     }
 
