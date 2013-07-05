@@ -27,7 +27,7 @@ class LoginForm extends CFormModel
 			// rememberMe needs to be a boolean
 			array('rememberMe', 'boolean'),
 			// password needs to be authenticated
-			array('password', 'authenticate'),
+			//array('password', 'authenticate'),
             // проверим заблокирован ли юзер ?, активирован ?
             array('username', 'isExistUser'),
 		);
@@ -68,11 +68,8 @@ class LoginForm extends CFormModel
 
                     $this->addError('username', 'Ваш пользователь не подтвердил регистрацию через ссылку в письме, вам отправлено письмо с активацией повторно');
 
-                    $link = CHtml::link('Подтвердить регистрацию', Yii::app()->createAbsoluteUrl('/confirm').'?hash='.$user['hash']);
-
-                    $msg = 'Уважаемый пользователь! Чтобы закончить регистрацию на сайте перейдите по указанной ссылке '.$link;
-
-                    HelperFile::sendEmail($user['email'], 'Активация аккаунта', $msg);
+                    // отправка письма, с ссылкой на активацию аккаунта
+                    HelperFile::sendEmail($user['email'], 'Активация аккаунта', User::createActivateEmail($user['hash']));
                 }
 
             }

@@ -52,7 +52,7 @@ class User extends CActiveRecord
             array('hash', 'length', 'max'=>128),
             array('role', 'default', 'value'=>1),
             array('block, confirm', 'default', 'value'=>self::STATUS_NO),
-			array('password', 'length', 'max'=>40),
+			array('password', 'length', 'max'=>128),
 
 			array('id, email, block, confirm, password, role, hash', 'safe', 'on'=>'search'),
 		);
@@ -136,12 +136,32 @@ class User extends CActiveRecord
 
     public function afterValidate(){
 
-        if(!empty($this->password)){
-            $this->hash = User::encrypted($this->password);
-        }
-
         // Передаём эстафетную палочку другим обработчикам// данного события.
         return parent::afterValidate();
+    }
+
+    protected function afterSave()
+    {
+        parent::afterSave();
+
+        // отправим письмо с ссылкой на активацию аккаунта по почте+ создадим каталог(где будем хранить файлы юзера)
+        if($this->isNewRecord){
+            // отправим письмо с ссылкой на активацию
+            HelperFile::sendEmail($this->email, 'Активация аккаунта', User::createActivateEmail($this->hash));
+        }
+    }
+
+    /*
+     * формируем тест письма, для активации аккаунта пользователя в системе
+     * $hash - уникальный хеш, по которому активируем юзера
+     */
+    static function createActivateEmail($hash){
+
+        $link = CHtml::link('Подтвердить регистрацию', Yii::app()->createAbsoluteUrl('/confirm').'?hash='.$hash);
+
+        $msg = 'Уважаемый пользователь! Чтобы закончить регистрацию на сайте перейдите по указанной ссылке '.$link;
+
+        return $msg;
     }
 
 }

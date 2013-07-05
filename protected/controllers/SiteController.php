@@ -153,11 +153,23 @@ class SiteController extends Controller
                         $this->redirect(Yii::app()->user->returnUrl);
                     }
                 }else{
+
                     //регаем нового юзера
+                    $user = new User();
+                    $user->email = $model->username;
+                    $user->password = User::encrypted($model->password);
+                    $user->role = User::ROLE_USER;
+                    $user->hash = md5(time());
+                    if($user->validate()){
+                        $user->save();
+                        Yii::app()->user->setFlash('registration','Вы успешно зарегистрировались в системе, вам было выслано письмо на почту с активацией аккаунта.');
+
+                        $this->refresh();
+
+                    }else{
+                        print_r($user->errors);
+                    }
                 }
-
-                // пользователь хочет авторизоваться
-
             }
 
 		}

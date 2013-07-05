@@ -9,9 +9,15 @@ $this->breadcrumbs=array(
 );
 ?>
 
-<h1>Login</h1>
+<h1>Авторизация</h1>
 
-<p>Please fill out the following form with your login credentials:</p>
+<?php if(Yii::app()->user->hasFlash('registration') ): ?>
+    <div class="flash-success">
+        <?php echo Yii::app()->user->getFlash('registration'); ?>
+    </div>
+
+<?php endif; ?>
+
 
 <div class="form">
 <?php $form=$this->beginWidget('CActiveForm', array(

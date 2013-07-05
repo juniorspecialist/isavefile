@@ -14,7 +14,7 @@
     </div>
 
     <?php
-        echo '<h2>'.CHtml::link(Yii::app()->createAbsoluteUrl('login'), 'Авторизация').'<h2>';
+        echo '<h2>'.CHtml::link('Авторизация',Yii::app()->createAbsoluteUrl('login')).'<h2>';
     ?>
 
 <?php else: ?>
@@ -28,7 +28,10 @@
         ),
     )); ?>
 
-    <?php echo $form->errorSummary($model); ?>
+    <?php echo $form->errorSummary($model);
+
+        echo '<h2>'.CHtml::link('Авторизация',Yii::app()->createAbsoluteUrl('login')).'<h2>';
+    ?>
 
     <?php $this->endWidget(); ?>
     </div><!-- form -->
