@@ -10,6 +10,7 @@
 $this->widget('zii.widgets.CListView', array(
     'dataProvider'=>$dataProvider,
     'itemView'=>'_file',   // refers to the partial view named '_post'
+    'emptyText'=>'Список файлов пуст',
 //    'sortableAttributes'=>array(
 //        'title',
 //        'create_time'=>'Post Time',

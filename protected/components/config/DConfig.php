@@ -132,10 +132,4 @@ class DConfig extends CApplicationComponent
         }
     }
 
-    /*
-     * список доступных расширений файлов для загрузки на сервер
-     */
-    public function accessUploadListFiles(){
-
-    }
 }

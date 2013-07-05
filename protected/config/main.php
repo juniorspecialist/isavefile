@@ -44,7 +44,7 @@ return array(
 		'user'=>array(
 			// enable cookie-based authentication
 			'allowAutoLogin'=>true,
-            'returnUrl'=>'user/'
+            //'returnUrl'=>Yii::app()->createAbsoluteUrl('user'),
 		),
 
 //        'cache'=>array(

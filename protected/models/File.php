@@ -120,4 +120,70 @@ class File extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+
+    /*
+     * по текстовому представлению возвращаем ID типа файла
+     */
+    static function getTypeFile($title){
+
+        if($title=='image'){
+            return File::TYPE_IMAGES;
+        }
+
+        if($title=='video'){
+            return File::TYPE_VIDEO;
+        }
+
+        if($title=='audio'){
+            return File::TYPE_AUDIO;
+        }
+
+        if($title=='archive'){
+            return File::TYPE_ARCHIVES;
+        }
+
+        if($title=='text'){
+            return File::TYPE_TEXT;
+        }
+
+        // не найдено соотвествие текстовому представлению категории
+        return false;
+    }
+
+    /*
+     * список расширений для файлов, которые можно загружать
+     * получаем по каждой категории строку, в которой доступные расширения для загрузки
+     * формируем массив доступных расширений
+     */
+    static function getExtensionList(){
+
+        $list_category = File::getCategoryList();
+
+        $ext_result = array();
+
+        //$title - текстовое представление, $id- числовое соотвествие категории
+        foreach($list_category as $title=>$id){
+
+            $list = explode(' ', Yii::app()->config->get('FILE_TYPE_'.$id));
+
+            foreach($list as $extension){
+                $ext_result[] = trim($extension);
+            }
+        }
+
+        return $ext_result;
+    }
+
+    /*
+     * список типов файлов
+     */
+    static function getCategoryList(){
+        return array(
+            'audio'=>File::TYPE_AUDIO,
+            'text'=>File::TYPE_TEXT,
+            'video'=>File::TYPE_VIDEO,
+            'image'=>File::TYPE_IMAGES,
+            'archive'=>File::TYPE_ARCHIVES,
+        );
+    }
 }

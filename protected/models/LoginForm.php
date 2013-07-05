@@ -72,6 +72,13 @@ class LoginForm extends CFormModel
                     HelperFile::sendEmail($user['email'], 'Активация аккаунта', User::createActivateEmail($user['hash']));
                 }
 
+                //проверка совпадения пароля
+                if(!$this->hasErrors())
+                {
+                    $this->_identity=new UserIdentity($this->username,$this->password);
+                    if(!$this->_identity->authenticate())
+                        $this->addError('password','Не верно указан логин или пароль.');
+                }
             }
         }
     }
